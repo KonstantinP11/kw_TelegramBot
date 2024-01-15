@@ -17,11 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
-    private NotificationTaskService notificationTaskService;
+    private final NotificationTaskService notificationTaskService;
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
     @Autowired
-    private TelegramBot telegramBot;
+    private final TelegramBot telegramBot;
 
     @PostConstruct
     public void init() {

@@ -21,8 +21,10 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class NotificationTaskServiceImpl implements NotificationTaskService {
-    private TelegramBot telegramBot;
-    private NotificationTaskRepository repository;
+
+    private final TelegramBot telegramBot;
+
+    private final NotificationTaskRepository repository;
     private static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private static Pattern MESSAGE_PATTERN = Pattern.compile("([0-9\\.\\:\\s]{16})(\\s)([\\W+]+)");
     private Logger logger = LoggerFactory.getLogger(NotificationTaskServiceImpl.class);
@@ -36,7 +38,7 @@ public class NotificationTaskServiceImpl implements NotificationTaskService {
         String clientMessage = update.message().text();
         long chatId = update.message().chat().id();
         if (clientMessage == null) {
-            telegramBot.execute(new SendMessage(chatId, "Для начала работы с ботом отправьте /stsrt"));
+            telegramBot.execute(new SendMessage(chatId, "Для начала работы с ботом отправьте /start"));
             return;
         }
         if (clientMessage.equals("/start")) {
@@ -51,7 +53,7 @@ public class NotificationTaskServiceImpl implements NotificationTaskService {
             String notification = matcher.group(3);
             NotificationTask notificationTask = new NotificationTask(chatId, notification, alarmDate);
             repository.save(notificationTask);
-            telegramBot.execute(new SendMessage(chatId, "Напоминание сохранено " + notificationTask));
+            telegramBot.execute(new SendMessage(chatId, "Напоминание сохранено " + alarmDate + " " + notification));
         } else {
             telegramBot.execute(new SendMessage(chatId, "Напоминание добавляется в формате 'dd.MM.yyyy HH:mm текст напоминания'"));
         }
@@ -63,8 +65,7 @@ public class NotificationTaskServiceImpl implements NotificationTaskService {
                 repository.findByAlarmDate(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         records.forEach(record -> {
             logger.info("Notification was sent");
-            telegramBot.execute(new SendMessage(record.getChatId(), String.format("Напоминание: \n%s" +
-                    " ,в %s", record.getNotification(), record.getAlarmDate())));
+            telegramBot.execute(new SendMessage(record.getChatId(), String.format("Напоминание: \n%s", record.getNotification())));
         });
     }
 }

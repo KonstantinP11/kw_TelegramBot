@@ -18,18 +18,20 @@ public class NotificationTask {
     @Column(name = "id")
     private UUID id;
     @Column(name = "chat_id")
-    private final Long chatId;
+    private Long chatId;
     @Column(name = "notification")
-    private final String notification;
+    private String notification;
     @Column(name = "alarm_date")
-    private final LocalDateTime alarmDate;
+    private LocalDateTime alarmDate;
+
+    public NotificationTask() {
+    }
 
     public NotificationTask(Long chatId, String notification, LocalDateTime alarmDate) {
         this.chatId = chatId;
         this.notification = notification;
         this.alarmDate = alarmDate;
     }
-
 
     @Override
     public boolean equals(Object o) {
